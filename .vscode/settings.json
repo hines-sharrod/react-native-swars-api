@@ -3,5 +3,23 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
-  }
+  },
+  "cSpell.words": [
+    "Coruscant",
+    "Dagobah",
+    "DURASTEEL",
+    "Endor",
+    "ENDOR",
+    "Hoth",
+    "HOTH",
+    "lightsaber",
+    "lightsabers",
+    "Mustafar",
+    "MUSTAFAR",
+    "Sith",
+    "SITH",
+    "starships",
+    "Tatooine",
+    "TATOOINE"
+  ]
 }
