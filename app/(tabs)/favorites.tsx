@@ -4,10 +4,11 @@ import { MaterialIcons } from "@expo/vector-icons"; // Make sure to import the i
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 
 export default function Tab() {
-  const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = useState<Film[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchFavorites = async () => {
     try {
@@ -22,6 +23,30 @@ export default function Tab() {
     }
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchFavorites().finally(() => setRefreshing(false));
+  };
+
+  const removeFavorite = async (filmId: number) => {
+    try {
+      const favorites = await AsyncStorage.getItem("favorites");
+      if (favorites) {
+        const favoriteFilms: Film[] = JSON.parse(favorites);
+        const updatedFavorites = favoriteFilms.filter(
+          (film) => film.episode_id !== filmId
+        );
+        await AsyncStorage.setItem(
+          "favorites",
+          JSON.stringify(updatedFavorites)
+        );
+        setFavorites(updatedFavorites);
+      }
+    } catch (error) {
+      console.error("Error removing favorite:", error);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchFavorites();
@@ -31,7 +56,12 @@ export default function Tab() {
   const renderItem = ({ item }: { item: Film }) => (
     <View style={styles.item}>
       <Text style={styles.title}>{item.title}</Text>
-      <MaterialIcons name="delete" size={24} color={Colors.SITH_RED} />
+      <MaterialIcons
+        name="delete"
+        size={24}
+        color={Colors.SITH_RED}
+        onPress={() => removeFavorite(item.episode_id)}
+      />
     </View>
   );
 
@@ -41,6 +71,9 @@ export default function Tab() {
         data={favorites}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </View>
   );
