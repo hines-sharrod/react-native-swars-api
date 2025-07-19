@@ -1,4 +1,5 @@
 import Colors from "@/constants/Colors";
+import { favoritesKey } from "@/constants/Keys";
 import { Film } from "@/types";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -26,7 +27,7 @@ const DetailsPage = () => {
 
   const checkFavoriteStatus = useCallback(async () => {
     try {
-      const favorites = await AsyncStorage.getItem("favorites");
+      const favorites = await AsyncStorage.getItem(favoritesKey);
       if (favorites) {
         const favoriteFilms: Film[] = JSON.parse(favorites);
         setIsFavorite(
@@ -42,7 +43,7 @@ const DetailsPage = () => {
 
   const toggleFavorite = useCallback(async () => {
     try {
-      const favorites = await AsyncStorage.getItem("favorites");
+      const favorites = await AsyncStorage.getItem(favoritesKey);
       const favoriteFilms: Film[] = favorites ? JSON.parse(favorites) : [];
 
       if (isFavorite) {
@@ -51,7 +52,7 @@ const DetailsPage = () => {
           (favorite) => favorite.episode_id !== Number(filmId)
         );
         await AsyncStorage.setItem(
-          "favorites",
+          favoritesKey,
           JSON.stringify(updatedFavorites)
         );
       } else {
@@ -60,7 +61,7 @@ const DetailsPage = () => {
         if (filmToAdd) {
           favoriteFilms.push(filmToAdd);
           await AsyncStorage.setItem(
-            "favorites",
+            favoritesKey,
             JSON.stringify(favoriteFilms)
           );
         }
