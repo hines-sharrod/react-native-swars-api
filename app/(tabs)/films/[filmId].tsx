@@ -1,12 +1,15 @@
 import Colors from "@/constants/Colors";
 import { Film } from "@/types";
-import { useLocalSearchParams } from "expo-router";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Stack, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect } from "react";
-import { ScrollView, StyleSheet, Text } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 const DetailsPage = () => {
   const { filmId } = useLocalSearchParams();
   const [film, setFilm] = React.useState<Film | null>(null);
+  const [isFavorite, setIsFavorite] = React.useState<boolean>(false);
 
   const fetchFilmDetails = useCallback(async () => {
     try {
@@ -21,16 +24,77 @@ const DetailsPage = () => {
     }
   }, [filmId]);
 
+  const checkFavoriteStatus = useCallback(async () => {
+    try {
+      const favorites = await AsyncStorage.getItem("favorites");
+      if (favorites) {
+        const favoriteFilms: Film[] = JSON.parse(favorites);
+        setIsFavorite(
+          favoriteFilms.some(
+            (favorite) => favorite.episode_id === Number(filmId)
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error checking favorite status:", error);
+    }
+  }, [filmId]);
+
+  const toggleFavorite = useCallback(async () => {
+    try {
+      const favorites = await AsyncStorage.getItem("favorites");
+      const favoriteFilms: Film[] = favorites ? JSON.parse(favorites) : [];
+
+      if (isFavorite) {
+        // Remove from favorites
+        const updatedFavorites = favoriteFilms.filter(
+          (favorite) => favorite.episode_id !== Number(filmId)
+        );
+        await AsyncStorage.setItem(
+          "favorites",
+          JSON.stringify(updatedFavorites)
+        );
+      } else {
+        // Add to favorites
+        const filmToAdd = film ? { ...film, episode_id: Number(filmId) } : null;
+        if (filmToAdd) {
+          favoriteFilms.push(filmToAdd);
+          await AsyncStorage.setItem(
+            "favorites",
+            JSON.stringify(favoriteFilms)
+          );
+        }
+      }
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.error("Error toggling favorite status:", error);
+    }
+  }, [film, filmId, isFavorite]);
+
   useEffect(() => {
     if (filmId) {
       fetchFilmDetails();
+      checkFavoriteStatus();
     }
-  }, [fetchFilmDetails, filmId]);
+  }, [checkFavoriteStatus, fetchFilmDetails, filmId]);
 
   return (
     <ScrollView style={styles.container}>
       {film && (
         <>
+          <Stack.Screen
+            options={{
+              headerRight: () => (
+                <TouchableOpacity onPress={toggleFavorite}>
+                  <FontAwesome
+                    name={isFavorite ? "heart" : "heart-o"}
+                    size={24}
+                    color={Colors.TATOOINE_SAND}
+                  />
+                </TouchableOpacity>
+              ),
+            }}
+          />
           <Text style={styles.title}>{film.title}</Text>
           <Text style={styles.detail}>Episode: {film.episode_id}</Text>
           <Text style={styles.detail}>Director: {film.director}</Text>
