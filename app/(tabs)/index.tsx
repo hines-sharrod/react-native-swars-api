@@ -1,5 +1,8 @@
 import { Redirect } from "expo-router";
+import React from "react";
 
-export default function Tab() {
+const Home = () => {
   return <Redirect href="/(tabs)/films" />;
-}
+};
+
+export default Home;

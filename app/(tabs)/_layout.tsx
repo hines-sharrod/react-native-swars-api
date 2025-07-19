@@ -1,8 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-
 import { Tabs } from "expo-router";
 import React from "react";
-import Colors from "../../constants/colors";
+import Colors from "../../constants/Colors";
 
 export default function TabLayout() {
   return (
@@ -37,6 +36,7 @@ export default function TabLayout() {
         name="films"
         options={{
           title: "Films",
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome size={20} name="film" color={color} />
           ),
