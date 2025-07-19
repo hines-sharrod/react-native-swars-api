@@ -2,7 +2,7 @@ import Colors from "@/constants/Colors";
 import { Film } from "@/types";
 import { useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text } from "react-native";
 
 const DetailsPage = () => {
   const { filmId } = useLocalSearchParams();
@@ -28,9 +28,18 @@ const DetailsPage = () => {
   }, [fetchFilmDetails, filmId]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{film?.title}</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      {film && (
+        <>
+          <Text style={styles.title}>{film.title}</Text>
+          <Text style={styles.detail}>Episode: {film.episode_id}</Text>
+          <Text style={styles.detail}>Director: {film.director}</Text>
+          <Text style={styles.detail}>Producer: {film.producer}</Text>
+          <Text style={styles.detail}>Release Date: {film.release_date}</Text>
+          <Text style={styles.crawl}>{film.opening_crawl}</Text>
+        </>
+      )}
+    </ScrollView>
   );
 };
 
@@ -39,27 +48,31 @@ export default DetailsPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "#f0f0f0",
+    padding: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#2c3e50",
     textAlign: "center",
-    padding: 20,
+    padding: 8,
     borderWidth: 2,
     borderColor: Colors.JEDI_BLUE,
     borderRadius: 10,
     backgroundColor: "#ecf0f1",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
+    marginBottom: 8,
+  },
+  detail: {
+    fontSize: 18,
+    color: "#34495e",
+    marginVertical: 5,
+  },
+  crawl: {
+    fontSize: 16,
+    color: "#34495e",
+    marginTop: 8,
+    backgroundColor: "#ecf0f1",
+    borderRadius: 5,
   },
 });
