@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   crawl: {
-    fontSize: 16,
+    fontSize: 24,
     color: "#34495e",
     marginTop: 8,
     backgroundColor: "#ecf0f1",
